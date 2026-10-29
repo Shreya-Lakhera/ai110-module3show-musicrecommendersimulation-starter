@@ -63,14 +63,22 @@ def main() -> None:
         },
     }
 
-    for profile_name, user_prefs in profiles.items():
-        recommendations = recommend_songs(user_prefs, songs, k=5)
+    modes = {
+        "Genre-First": "genre-first",
+        "Mood-First": "mood-first",
+        "Energy-Focused": "energy-focused",
+    }
 
-        print(f"\n{profile_name}\n")
-        for song, score, explanation in recommendations:
-            print(f"{song['title']} - Score: {score:.2f}")
-            print(f"Because: {explanation}")
-            print()
+    for mode_name, mode in modes.items():
+        print(f"\n=== {mode_name} ===")
+        for profile_name, user_prefs in profiles.items():
+            recommendations = recommend_songs(user_prefs, songs, k=5, mode=mode)
+
+            print(f"\n{profile_name}\n")
+            for song, score, explanation in recommendations:
+                print(f"{song['title']} - Score: {score:.2f}")
+                print(f"Because: {explanation}")
+                print()
 
 
 if __name__ == "__main__":

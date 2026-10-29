@@ -30,6 +30,20 @@ class UserProfile:
     target_energy: float
     likes_acoustic: bool
 
+@dataclass(frozen=True)
+class ScoringStrategy:
+    """Define the weights used by one recommendation ranking mode."""
+    genre_weight: float
+    mood_weight: float
+    energy_weight: float
+
+
+SCORING_STRATEGIES = {
+    "genre-first": ScoringStrategy(genre_weight=1.5, mood_weight=0.75, energy_weight=1.5),
+    "mood-first": ScoringStrategy(genre_weight=0.75, mood_weight=1.5, energy_weight=1.5),
+    "energy-focused": ScoringStrategy(genre_weight=0.5, mood_weight=0.5, energy_weight=2.0),
+}
+
 class Recommender:
     """
     OOP implementation of the recommendation logic.
@@ -64,28 +78,35 @@ def load_songs(csv_path):
 
     return songs
 
-def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
-    """Score one song against user preferences and explain the result."""
+def score_song(
+    user_prefs: Dict, song: Dict, mode: str = "genre-first"
+) -> Tuple[float, List[str]]:
+    """Score one song with the selected ranking strategy."""
     score = 0.0
     reasons = []
+    try:
+        strategy = SCORING_STRATEGIES[mode]
+    except KeyError as error:
+        valid_modes = ", ".join(sorted(SCORING_STRATEGIES))
+        raise ValueError(f"Unknown scoring mode '{mode}'. Choose: {valid_modes}") from error
 
     favorite_genre = user_prefs.get("favorite_genre", user_prefs.get("genre"))
     favorite_mood = user_prefs.get("favorite_mood", user_prefs.get("mood"))
     target_energy = user_prefs.get("target_energy", user_prefs.get("energy"))
 
     if song["genre"] == favorite_genre:
-        score += 1.0
-        reasons.append("genre match (+1.0)")
+        score += strategy.genre_weight
+        reasons.append(f"genre match (+{strategy.genre_weight:.2f})")
 
     if song["mood"] == favorite_mood:
-        score += 1.0
-        reasons.append("mood match (+1.0)")
+        score += strategy.mood_weight
+        reasons.append(f"mood match (+{strategy.mood_weight:.2f})")
 
     if target_energy is not None:
         energy_similarity = max(
             0.0, min(1.0, 1.0 - abs(float(song["energy"]) - float(target_energy)))
         )
-        energy_points = 2.0 * energy_similarity
+        energy_points = strategy.energy_weight * energy_similarity
         score += energy_points
         reasons.append(f"energy similarity (+{energy_points:.2f})")
 
@@ -152,12 +173,17 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
 
     return score, reasons
 
-def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
-    """Return the top k songs ranked by preference score."""
+def recommend_songs(
+    user_prefs: Dict,
+    songs: List[Dict],
+    k: int = 5,
+    mode: str = "genre-first",
+) -> List[Tuple[Dict, float, str]]:
+    """Return the top k songs ranked with the selected strategy."""
     scored_songs = []
 
     for song in songs:
-        score, reasons = score_song(user_prefs, song)
+        score, reasons = score_song(user_prefs, song, mode=mode)
         explanation = ", ".join(reasons) or "no preference matches"
         scored_songs.append((song, score, explanation))
 

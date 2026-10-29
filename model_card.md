@@ -48,6 +48,11 @@ genre 2 points and energy up to 1 point. The experiment reduced the genre
 weight and doubled the energy weight. The system then sorts all songs and
 returns the top five. Each result includes its matching reasons.
 
+Users can choose three scoring modes. Genre-First gives genre the largest
+weight. Mood-First gives mood the largest weight. Energy-Focused gives energy
+the largest weight. The same song features and explanations are used in each
+mode.
+
 ## 5. Observed Behavior / Biases
 
 The system favors songs with energy close to the user's target. This can

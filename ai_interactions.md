@@ -47,12 +47,20 @@ the popularity and lyrical-complexity similarities are clamped to valid
 
 **Which design pattern did you use?**
 
-<!-- e.g., Strategy, Factory, Observer, etc. -->
+Strategy pattern.
 
 **How did AI help you brainstorm or implement it?**
 
-<!-- Describe the conversation or suggestions that led to your decision -->
+I asked the AI to suggest a modular way to support Genre-First, Mood-First,
+and Energy-Focused rankings without duplicating the song loop. It suggested
+representing each mode with a small strategy object containing genre, mood,
+and energy weights. The recommendation function selects the strategy by name
+and uses the same scoring pipeline for every mode.
 
 **How does the pattern appear in your final code?**
 
-<!-- Point to the relevant class or method -->
+`ScoringStrategy` in `src/recommender.py` stores the three mode weights.
+`SCORING_STRATEGIES` maps user-facing mode names to strategy objects.
+`score_song` selects a strategy and applies its weights, while
+`recommend_songs` passes the selected mode through the ranking loop.
+`src/main.py` demonstrates switching among all three modes.

@@ -42,12 +42,18 @@ differences visible without requiring every song to match exactly.
 
 For every song, the scoring loop starts at zero and applies these rules:
 
-1. Add **1.0 point** when `song["genre"]` matches `favorite_genre`.
-2. Add **1.0 point** when `song["mood"]` matches `favorite_mood`.
+The default **Genre-First** mode adds **1.5 points** for a genre match,
+**0.75 points** for a mood match, and up to **1.5 points** for energy
+similarity. The **Mood-First** mode gives mood the largest weight, while
+**Energy-Focused** gives energy the largest weight.
+
+For every mode, the scoring loop also applies these rules:
+
+1. Add the mode's genre weight when `song["genre"]` matches `favorite_genre`.
+2. Add the mode's mood weight when `song["mood"]` matches `favorite_mood`.
 3. Add an energy-similarity score of
    `1.0 - abs(song["energy"] - target_energy)`. This gives a song closer to
-   the target energy more points. The experiment doubles this similarity
-   contribution, so energy contributes between zero and two points.
+   the target energy more points, multiplied by the mode's energy weight.
 4. Add **0.5 points** when the user's acoustic preference agrees with the
    song's acousticness: an acoustic preference matches an acousticness of at
    least `0.6`, while a non-acoustic preference matches a value below `0.6`.
@@ -78,9 +84,9 @@ Output: sort by score -> return top k recommendations
 
 ### Expected Biases
 
-This rule may over-prioritize genre because a genre match is worth twice as
-much as a mood match. It may also favor high-energy songs for this particular
-profile and overlook a great song with a different genre or mood. The small
+The selected mode may over-prioritize one feature. Energy-Focused may favor
+high-energy songs for a profile and overlook a great song with a different
+genre or mood. The small
 ten-song catalog, hand-selected features, and single fixed profile can make
 the results less representative than a real user's preferences.
 
@@ -130,20 +136,20 @@ Loaded songs: 10
 
 Top recommendations:
 
-Sunrise City - Score: 6.82
-Because: genre match (+1.0), mood match (+1.0), energy similarity (+1.84), acoustic preference match (+0.5), popularity similarity (+0.48), release decade match (+0.5), detailed mood tag match (+0.5), lyrical complexity similarity (+0.49), instrumental preference match (+0.5)
+Sunrise City - Score: 6.61
+Because: genre match (+1.50), mood match (+0.75), energy similarity (+1.38), acoustic preference match (+0.5), popularity similarity (+0.48), release decade match (+0.5), detailed mood tag match (+0.5), lyrical complexity similarity (+0.49), instrumental preference match (+0.5)
 
-Gym Hero - Score: 5.89
-Because: genre match (+1.0), energy similarity (+1.94), acoustic preference match (+0.5), popularity similarity (+0.46), release decade match (+0.5), detailed mood tag match (+0.5), lyrical complexity similarity (+0.49), instrumental preference match (+0.5)
+Gym Hero - Score: 5.91
+Because: genre match (+1.50), energy similarity (+1.46), acoustic preference match (+0.5), popularity similarity (+0.46), release decade match (+0.5), detailed mood tag match (+0.5), lyrical complexity similarity (+0.49), instrumental preference match (+0.5)
 
-Rooftop Lights - Score: 4.67
-Because: mood match (+1.0), energy similarity (+1.72), acoustic preference match (+0.5), popularity similarity (+0.49), lyrical complexity similarity (+0.46), instrumental preference match (+0.5)
+Rooftop Lights - Score: 4.00
+Because: mood match (+0.75), energy similarity (+1.29), acoustic preference match (+0.5), popularity similarity (+0.49), lyrical complexity similarity (+0.46), instrumental preference match (+0.5)
 
-Storm Runner - Score: 3.88
-Because: energy similarity (+1.98), acoustic preference match (+0.5), popularity similarity (+0.48), lyrical complexity similarity (+0.42), instrumental preference match (+0.5)
+Storm Runner - Score: 3.38
+Because: energy similarity (+1.48), acoustic preference match (+0.5), popularity similarity (+0.48), lyrical complexity similarity (+0.42), instrumental preference match (+0.5)
 
-Night Drive Loop - Score: 3.60
-Because: energy similarity (+1.70), acoustic preference match (+0.5), popularity similarity (+0.47), detailed mood tag match (+0.5), lyrical complexity similarity (+0.43)
+Night Drive Loop - Score: 3.18
+Because: energy similarity (+1.27), acoustic preference match (+0.5), popularity similarity (+0.47), detailed mood tag match (+0.5), lyrical complexity similarity (+0.43)
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
