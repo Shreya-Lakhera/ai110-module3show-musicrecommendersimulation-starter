@@ -25,14 +25,14 @@ that are most useful for distinguishing contrasting songs:
 
 ```python
 user_prefs = {
-    "favorite_genre": "rock",
-    "favorite_mood": "intense",
-    "target_energy": 0.85,
+    "favorite_genre": "pop",
+    "favorite_mood": "happy",
+    "target_energy": 0.8,
     "likes_acoustic": False,
 }
 ```
 
-This profile should clearly separate an intense rock song from a chill lofi
+This profile should clearly separate an upbeat pop song from a chill lofi
 song: the genre and mood matches receive points, and the high target energy
 favors energetic tracks. It is intentionally specific enough to make those
 differences visible without requiring every song to match exactly.
@@ -53,6 +53,10 @@ For every song, the scoring loop starts at zero and applies these rules:
 5. Sort songs by score from highest to lowest and return the top `k`
    recommendations. The explanation for each result lists the matching
    features that contributed to its score.
+
+The implementation uses Python's `sorted()` rather than `.sort()`.
+`sorted()` returns a new ranked list and leaves the original song catalog
+unchanged; `.sort()` would reorder the catalog in place.
 
 The data flow is:
 
@@ -113,15 +117,27 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Sample Recommendation Output
 
-Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
+The default `pop`/`happy` profile produces:
 
 ```
-# e.g.:
-# User profile: genre=indie, mood=chill, energy=low
-# Recommendations:
-#   1. ...
-#   2. ...
-#   3. ...
+Loaded songs: 10
+
+Top recommendations:
+
+Sunrise City - Score: 4.48
+Because: genre match (+2.0), mood match (+1.0), energy similarity (+0.98), acoustic preference match (+0.5)
+
+Gym Hero - Score: 3.37
+Because: genre match (+2.0), energy similarity (+0.87), acoustic preference match (+0.5)
+
+Rooftop Lights - Score: 2.46
+Because: mood match (+1.0), energy similarity (+0.96), acoustic preference match (+0.5)
+
+Night Drive Loop - Score: 1.45
+Because: energy similarity (+0.95), acoustic preference match (+0.5)
+
+Storm Runner - Score: 1.39
+Because: energy similarity (+0.89), acoustic preference match (+0.5)
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
@@ -162,5 +178,3 @@ Write 1 to 2 paragraphs here about what you learned:
 
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
-
-

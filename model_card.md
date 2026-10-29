@@ -21,7 +21,19 @@ Prompts:
 
 ## 3. How the Model Works  
 
-Explain your scoring approach in simple language.  
+The recommender starts with a user's favorite genre, favorite mood, target
+energy level, and acoustic preference. It looks at every song in the catalog
+and gives it points when its genre matches the favorite genre and when its
+mood matches the favorite mood. A genre match is worth 2 points and a mood
+match is worth 1 point.
+
+The model also compares the song's energy with the user's target. Songs closer
+to the target receive more similarity points, up to 1 point. A song receives
+another 0.5 points when its acousticness agrees with the user's acoustic
+preference. After all songs are scored, the model sorts them from highest to
+lowest and displays the top results in the command-line interface, along with
+the reasons for each score. This replaces the starter behavior, which did not
+calculate scores or produce ranked recommendations.
 
 Prompts:  
 
