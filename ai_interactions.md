@@ -10,19 +10,34 @@
 
 **What task did you give the agent?**
 
-<!-- Describe the goal you asked the agent to accomplish -->
+Add at least five advanced song attributes to the CSV and update the
+recommender so user preferences can score those attributes.
 
 **Prompts used:**
 
-<!-- Paste the key prompts you gave the agent -->
+> Add five new song attributes that are not in the baseline CSV: popularity
+> from 0-100, release decade, semicolon-separated detailed mood tags,
+> lyrical complexity from 0-1, and instrumentalness from 0-1. Update
+> `load_songs` to convert numeric values and update `score_song` to add
+> bounded, explainable points for matching user preferences for these fields.
+> Keep the existing genre, mood, energy, and acoustic scoring behavior.
 
 **What did the agent generate or change?**
 
-<!-- List the files edited, code generated, or commands run -->
+The workflow added five columns and values for all 10 songs in
+`data/songs.csv`. It updated `load_songs` to parse popularity, release
+decade, lyrical complexity, and instrumentalness. It updated `score_song` to
+score popularity similarity, decade matches, detailed mood tags, lyrical
+complexity similarity, and instrumental preference. It added advanced
+preferences to the profiles in `src/main.py`.
 
 **What did you verify or fix manually?**
 
-<!-- Describe anything the agent got wrong or that required human review -->
+I checked that every CSV row has all five new fields and that semicolon
+separators keep mood tags inside one CSV cell. I ran the CLI and confirmed
+that scores and explanations include the new features. I also checked that
+the popularity and lyrical-complexity similarities are clamped to valid
+0-to-1 ranges before their 0.5-point weights are applied.
 
 ---
 

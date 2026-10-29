@@ -19,8 +19,9 @@ Replace this paragraph with your own summary of what your version does.
 
 The recommender compares each song in `data/songs.csv` with one user's
 taste profile. Each song includes its `genre`, `mood`, `energy`, `tempo_bpm`,
-`valence`, `danceability`, and `acousticness` (along with identifying
-information such as title and artist). The profile stores the preferences
+`valence`, `danceability`, `acousticness`, `popularity`, `release_decade`,
+`mood_tags`, `lyrical_complexity`, and `instrumentalness` (along with
+identifying information such as title and artist). The profile stores the preferences
 that are most useful for distinguishing contrasting songs:
 
 ```python
@@ -50,7 +51,12 @@ For every song, the scoring loop starts at zero and applies these rules:
 4. Add **0.5 points** when the user's acoustic preference agrees with the
    song's acousticness: an acoustic preference matches an acousticness of at
    least `0.6`, while a non-acoustic preference matches a value below `0.6`.
-5. Sort songs by score from highest to lowest and return the top `k`
+5. Add up to **0.5 points** for popularity similarity, **0.5 points** for a
+   preferred release decade, and **0.5 points** for a preferred detailed mood
+   tag.
+6. Add up to **0.5 points** for lyrical-complexity similarity and **0.5
+   points** when instrumentalness agrees with the user's preference.
+7. Sort songs by score from highest to lowest and return the top `k`
    recommendations. The explanation for each result lists the matching
    features that contributed to its score.
 
@@ -124,20 +130,20 @@ Loaded songs: 10
 
 Top recommendations:
 
-Sunrise City - Score: 4.34
-Because: genre match (+1.0), mood match (+1.0), energy similarity (+1.84), acoustic preference match (+0.5)
+Sunrise City - Score: 6.82
+Because: genre match (+1.0), mood match (+1.0), energy similarity (+1.84), acoustic preference match (+0.5), popularity similarity (+0.48), release decade match (+0.5), detailed mood tag match (+0.5), lyrical complexity similarity (+0.49), instrumental preference match (+0.5)
 
-Gym Hero - Score: 3.44
-Because: genre match (+1.0), energy similarity (+1.94), acoustic preference match (+0.5)
+Gym Hero - Score: 5.89
+Because: genre match (+1.0), energy similarity (+1.94), acoustic preference match (+0.5), popularity similarity (+0.46), release decade match (+0.5), detailed mood tag match (+0.5), lyrical complexity similarity (+0.49), instrumental preference match (+0.5)
 
-Rooftop Lights - Score: 3.22
-Because: mood match (+1.0), energy similarity (+1.72), acoustic preference match (+0.5)
+Rooftop Lights - Score: 4.67
+Because: mood match (+1.0), energy similarity (+1.72), acoustic preference match (+0.5), popularity similarity (+0.49), lyrical complexity similarity (+0.46), instrumental preference match (+0.5)
 
-Storm Runner - Score: 2.48
-Because: energy similarity (+1.98), acoustic preference match (+0.5)
+Storm Runner - Score: 3.88
+Because: energy similarity (+1.98), acoustic preference match (+0.5), popularity similarity (+0.48), lyrical complexity similarity (+0.42), instrumental preference match (+0.5)
 
-Night Drive Loop - Score: 2.20
-Because: energy similarity (+1.70), acoustic preference match (+0.5)
+Night Drive Loop - Score: 3.60
+Because: energy similarity (+1.70), acoustic preference match (+0.5), popularity similarity (+0.47), detailed mood tag match (+0.5), lyrical complexity similarity (+0.43)
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->

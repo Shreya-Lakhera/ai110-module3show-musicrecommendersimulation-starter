@@ -56,6 +56,10 @@ def load_songs(csv_path):
         for row in reader:
             row["energy"] = float(row["energy"])
             row["tempo_bpm"] = int(row["tempo_bpm"])
+            row["popularity"] = int(row["popularity"])
+            row["release_decade"] = int(row["release_decade"].replace("s", ""))
+            row["lyrical_complexity"] = float(row["lyrical_complexity"])
+            row["instrumentalness"] = float(row["instrumentalness"])
             songs.append(row)
 
     return songs
@@ -95,6 +99,56 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         if acoustic_match:
             score += 0.5
             reasons.append("acoustic preference match (+0.5)")
+
+    if "target_popularity" in user_prefs:
+        popularity_similarity = max(
+            0.0,
+            min(
+                1.0,
+                1.0
+                - abs(
+                    float(song["popularity"])
+                    - float(user_prefs["target_popularity"])
+                )
+                / 100.0,
+            ),
+        )
+        popularity_points = 0.5 * popularity_similarity
+        score += popularity_points
+        reasons.append(f"popularity similarity (+{popularity_points:.2f})")
+
+    if "preferred_release_decade" in user_prefs:
+        if song["release_decade"] == int(user_prefs["preferred_release_decade"]):
+            score += 0.5
+            reasons.append("release decade match (+0.5)")
+
+    if "preferred_mood_tag" in user_prefs:
+        mood_tags = song["mood_tags"].split(";")
+        if user_prefs["preferred_mood_tag"] in mood_tags:
+            score += 0.5
+            reasons.append("detailed mood tag match (+0.5)")
+
+    if "target_lyrical_complexity" in user_prefs:
+        lyrical_similarity = max(
+            0.0,
+            min(
+                1.0,
+                1.0
+                - abs(
+                    float(song["lyrical_complexity"])
+                    - float(user_prefs["target_lyrical_complexity"])
+                ),
+            ),
+        )
+        lyrical_points = 0.5 * lyrical_similarity
+        score += lyrical_points
+        reasons.append(f"lyrical complexity similarity (+{lyrical_points:.2f})")
+
+    if "likes_instrumental" in user_prefs:
+        is_instrumental = float(song["instrumentalness"]) >= 0.6
+        if is_instrumental == bool(user_prefs["likes_instrumental"]):
+            score += 0.5
+            reasons.append("instrumental preference match (+0.5)")
 
     return score, reasons
 

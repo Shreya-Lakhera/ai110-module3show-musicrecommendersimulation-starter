@@ -14,7 +14,8 @@ It also explains why each song received its score.
 
 The system uses a catalog of 10 songs from `data/songs.csv`.
 Each song has a title, artist, genre, mood, energy, tempo, valence,
-danceability, and acousticness.
+danceability, acousticness, popularity, release decade, detailed mood tags,
+lyrical complexity, and instrumentalness.
 
 The dataset includes pop, lofi, rock, ambient, jazz, synthwave, and indie
 pop. It includes moods such as happy, chill, intense, relaxed, focused, and
@@ -36,6 +37,11 @@ The recommender checks every song:
 - A mood match adds 1 point.
 - An energy value close to the target adds up to 2 points.
 - An acoustic preference match adds 0.5 points.
+- A close popularity target adds up to 0.5 points.
+- A release decade match adds 0.5 points.
+- A detailed mood tag match adds 0.5 points.
+- A close lyrical-complexity target adds up to 0.5 points.
+- An instrumental preference match adds 0.5 points.
 
 The current weights come from a small experiment. The original recipe gave
 genre 2 points and energy up to 1 point. The experiment reduced the genre
