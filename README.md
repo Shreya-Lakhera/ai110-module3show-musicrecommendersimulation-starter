@@ -17,17 +17,62 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+The recommender compares each song in `data/songs.csv` with one user's
+taste profile. Each song includes its `genre`, `mood`, `energy`, `tempo_bpm`,
+`valence`, `danceability`, and `acousticness` (along with identifying
+information such as title and artist). The profile stores the preferences
+that are most useful for distinguishing contrasting songs:
 
-Some prompts to answer:
+```python
+user_prefs = {
+    "favorite_genre": "rock",
+    "favorite_mood": "intense",
+    "target_energy": 0.85,
+    "likes_acoustic": False,
+}
+```
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+This profile should clearly separate an intense rock song from a chill lofi
+song: the genre and mood matches receive points, and the high target energy
+favors energetic tracks. It is intentionally specific enough to make those
+differences visible without requiring every song to match exactly.
 
-You can include a simple diagram or bullet list if helpful.
+### Algorithm Recipe
+
+For every song, the scoring loop starts at zero and applies these rules:
+
+1. Add **2.0 points** when `song["genre"]` matches `favorite_genre`.
+2. Add **1.0 point** when `song["mood"]` matches `favorite_mood`.
+3. Add an energy-similarity score of
+   `1.0 - abs(song["energy"] - target_energy)`. This gives a song closer to
+   the target energy more points while keeping the contribution between zero
+   and one for the dataset's normalized energy values.
+4. Add **0.5 points** when the user's acoustic preference agrees with the
+   song's acousticness: an acoustic preference matches an acousticness of at
+   least `0.6`, while a non-acoustic preference matches a value below `0.6`.
+5. Sort songs by score from highest to lowest and return the top `k`
+   recommendations. The explanation for each result lists the matching
+   features that contributed to its score.
+
+The data flow is:
+
+```text
+Input: user_prefs
+          |
+          v
+Process: load songs -> score every song -> record reasons
+          |
+          v
+Output: sort by score -> return top k recommendations
+```
+
+### Expected Biases
+
+This rule may over-prioritize genre because a genre match is worth twice as
+much as a mood match. It may also favor high-energy songs for this particular
+profile and overlook a great song with a different genre or mood. The small
+ten-song catalog, hand-selected features, and single fixed profile can make
+the results less representative than a real user's preferences.
 
 ---
 
@@ -117,6 +162,5 @@ Write 1 to 2 paragraphs here about what you learned:
 
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
-
 
 
