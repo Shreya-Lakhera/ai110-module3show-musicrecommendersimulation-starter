@@ -179,12 +179,44 @@ def recommend_songs(
     k: int = 5,
     mode: str = "genre-first",
 ) -> List[Tuple[Dict, float, str]]:
-    """Return the top k songs ranked with the selected strategy."""
+    """Return the top k songs ranked with diversity penalties."""
     scored_songs = []
 
     for song in songs:
         score, reasons = score_song(user_prefs, song, mode=mode)
-        explanation = ", ".join(reasons) or "no preference matches"
-        scored_songs.append((song, score, explanation))
+        scored_songs.append((song, score, reasons))
 
-    return sorted(scored_songs, key=lambda result: result[1], reverse=True)[:k]
+    recommendations = []
+    selected_artists = set()
+    selected_genres = set()
+
+    while scored_songs and len(recommendations) < k:
+        adjusted_scores = []
+        for song, score, reasons in scored_songs:
+            diversity_penalty = 0.0
+            penalty_reasons = []
+
+            if song["artist"] in selected_artists:
+                diversity_penalty += 1.0
+                penalty_reasons.append("repeat artist penalty (-1.0)")
+            if song["genre"] in selected_genres:
+                diversity_penalty += 0.25
+                penalty_reasons.append("repeat genre penalty (-0.25)")
+
+            adjusted_scores.append(
+                (song, score - diversity_penalty, reasons, penalty_reasons)
+            )
+
+        song, adjusted_score, reasons, penalty_reasons = max(
+            adjusted_scores, key=lambda result: result[1]
+        )
+        explanation_parts = reasons + penalty_reasons
+        explanation = ", ".join(explanation_parts) or "no preference matches"
+        recommendations.append((song, adjusted_score, explanation))
+        selected_artists.add(song["artist"])
+        selected_genres.add(song["genre"])
+        scored_songs = [
+            result for result in scored_songs if result[0] is not song
+        ]
+
+    return recommendations

@@ -39,6 +39,27 @@ that scores and explanations include the new features. I also checked that
 the popularity and lyrical-complexity similarities are clamped to valid
 0-to-1 ranges before their 0.5-point weights are applied.
 
+### Diversity and Visual Summary Workflow
+
+**Prompt used for the diversity rule:**
+
+> Add a diversity penalty to `recommend_songs`. Select recommendations
+> greedily, and subtract 1.0 point when a candidate's artist is already in
+> the selected results and 0.25 points when its genre is already represented.
+> Include the penalty in the explanation reasons. Keep selecting until the
+> requested top-k count is reached.
+
+**Prompt used for the terminal table:**
+
+> Replace the verbose recommendation printout with a dependency-free ASCII
+> table. Include title, artist, genre, adjusted score, and the full reasons
+> string, including any diversity penalties.
+
+The agent changed `recommend_songs` from one final sort to greedy selection
+with artist and genre tracking. It also added `print_recommendation_table` in
+`src/main.py`. I manually verified that repeated artists and genres receive
+penalties and that the reasons column remains visible.
+
 ---
 
 ## Design Pattern (SF10)

@@ -90,6 +90,11 @@ genre or mood. The small
 ten-song catalog, hand-selected features, and single fixed profile can make
 the results less representative than a real user's preferences.
 
+The CLI demonstrates three modes: Genre-First, Mood-First, and
+Energy-Focused. Recommendations are also selected with a diversity penalty:
+an artist already selected costs 1 point, and a genre already represented
+costs 0.25 points. The terminal table shows these penalties in the reasons.
+
 ---
 
 ## Getting Started

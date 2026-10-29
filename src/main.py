@@ -12,6 +12,24 @@ You will implement the functions in recommender.py:
 from src.recommender import load_songs, recommend_songs
 
 
+def print_recommendation_table(
+    profile_name: str,
+    mode_name: str,
+    recommendations: list[tuple[dict, float, str]],
+) -> None:
+    """Print recommendations in a compact table with score reasons."""
+    print(f"\n{mode_name} | {profile_name}")
+    print("-" * 100)
+    print(f"{'Title':<22} {'Artist':<18} {'Genre':<12} {'Score':>6}  Reasons")
+    print("-" * 100)
+    for song, score, explanation in recommendations:
+        print(
+            f"{song['title']:<22} {song['artist']:<18} "
+            f"{song['genre']:<12} {score:>6.2f}  {explanation}"
+        )
+    print()
+
+
 def main() -> None:
     songs = load_songs("data/songs.csv") 
     print(f"Loaded songs: {len(songs)}")
@@ -74,11 +92,7 @@ def main() -> None:
         for profile_name, user_prefs in profiles.items():
             recommendations = recommend_songs(user_prefs, songs, k=5, mode=mode)
 
-            print(f"\n{profile_name}\n")
-            for song, score, explanation in recommendations:
-                print(f"{song['title']} - Score: {score:.2f}")
-                print(f"Because: {explanation}")
-                print()
+            print_recommendation_table(profile_name, mode_name, recommendations)
 
 
 if __name__ == "__main__":

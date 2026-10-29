@@ -53,6 +53,11 @@ weight. Mood-First gives mood the largest weight. Energy-Focused gives energy
 the largest weight. The same song features and explanations are used in each
 mode.
 
+The recommender also selects results one at a time to improve variety. It
+subtracts 1 point when an artist has already been selected and 0.25 points
+when a genre has already been selected. These penalties appear in the reasons,
+so users can see why a slightly lower-scoring song was chosen.
+
 ## 5. Observed Behavior / Biases
 
 The system favors songs with energy close to the user's target. This can
