@@ -41,12 +41,12 @@ differences visible without requiring every song to match exactly.
 
 For every song, the scoring loop starts at zero and applies these rules:
 
-1. Add **2.0 points** when `song["genre"]` matches `favorite_genre`.
+1. Add **1.0 point** when `song["genre"]` matches `favorite_genre`.
 2. Add **1.0 point** when `song["mood"]` matches `favorite_mood`.
 3. Add an energy-similarity score of
    `1.0 - abs(song["energy"] - target_energy)`. This gives a song closer to
-   the target energy more points while keeping the contribution between zero
-   and one for the dataset's normalized energy values.
+   the target energy more points. The experiment doubles this similarity
+   contribution, so energy contributes between zero and two points.
 4. Add **0.5 points** when the user's acoustic preference agrees with the
    song's acousticness: an acoustic preference matches an acousticness of at
    least `0.6`, while a non-acoustic preference matches a value below `0.6`.
@@ -117,27 +117,27 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Sample Recommendation Output
 
-The default `pop`/`happy` profile produces:
+The current High-Energy Pop profile produces:
 
 ```
 Loaded songs: 10
 
 Top recommendations:
 
-Sunrise City - Score: 4.48
-Because: genre match (+2.0), mood match (+1.0), energy similarity (+0.98), acoustic preference match (+0.5)
+Sunrise City - Score: 4.34
+Because: genre match (+1.0), mood match (+1.0), energy similarity (+1.84), acoustic preference match (+0.5)
 
-Gym Hero - Score: 3.37
-Because: genre match (+2.0), energy similarity (+0.87), acoustic preference match (+0.5)
+Gym Hero - Score: 3.44
+Because: genre match (+1.0), energy similarity (+1.94), acoustic preference match (+0.5)
 
-Rooftop Lights - Score: 2.46
-Because: mood match (+1.0), energy similarity (+0.96), acoustic preference match (+0.5)
+Rooftop Lights - Score: 3.22
+Because: mood match (+1.0), energy similarity (+1.72), acoustic preference match (+0.5)
 
-Night Drive Loop - Score: 1.45
-Because: energy similarity (+0.95), acoustic preference match (+0.5)
+Storm Runner - Score: 2.48
+Because: energy similarity (+1.98), acoustic preference match (+0.5)
 
-Storm Runner - Score: 1.39
-Because: energy similarity (+0.89), acoustic preference match (+0.5)
+Night Drive Loop - Score: 2.20
+Because: energy similarity (+1.70), acoustic preference match (+0.5)
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
